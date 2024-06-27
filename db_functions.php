@@ -30,7 +30,7 @@ function checkSpindleKey(PDO $pdo, $spindle_id, $spindle_key)
     $result = $checkpdo->fetch(PDO::FETCH_ASSOC);
 
     if (!empty($result['spindle_key'])) {
-      if ($result['spindle_key'] === $spindle_key) {
+        if (password_verify($spindle_key, $result['spindle_key'])) {
         return ['login' => true, 'alias' => $result['alias']];
       }
     }

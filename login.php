@@ -32,8 +32,10 @@ if (!empty($post_data['spindle_id']) && !empty($post_data['spindle_key'])) {
 
     $spindle_credentials = checkSpindleKey($pdo, $post_data['spindle_id'], $post_data['spindle_key']);
 
+    $pdo = null;
+
     if (!$spindle_credentials['login']) {
-      $data['error_message'] = "Wrong Spindle ID or Spindle Key";
+      $data['error_message'] = 'Wrong Spindle ID or Spindle Key';
     }
   } catch (PDOException $e) {
     echo 'Error in DB execution: ' . $e->getMessage();
@@ -61,3 +63,5 @@ if ((isset($spindle_credentials) && !$spindle_credentials['login']) || empty($po
 
   echo $renderedContent;
 }
+
+?>

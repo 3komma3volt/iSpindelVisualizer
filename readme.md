@@ -3,7 +3,7 @@
   
 The iSpindel Visualizer is a simple, easy to use chart display of [iSpindel](https://www.ispindel.de) measurement data using PHP, MySQL, Bootstrap and chart.js.
 
-The intention was to create a extremely simple tool which stores the data which is sent by the iSpindel HTTPS POST and displaying it without any registration and special cloud service.
+The intention was to create an extremely simple tool which stores the data which is sent by the iSpindel HTTPS POST and displaying it without any registration and special cloud service.
 
   ![Dashboard](assets/dashboard.png)
   
@@ -38,11 +38,10 @@ To access your data, simply log-in using your iSpindel ID and your self chosen k
 
 ## Security
 
-There are not really any security features built-in. Even the spindle key is stored in plaintext in the database. Why? Because its just gravity data of an home-use fermenting process and not banking data.
+There is a minor security encrypting the spindle's key in the database.
 
 ## Todo
 
-- Adding security as encrypting the key in the database
 - Adding feature of renaming the alias of a iSpindel
 - Ajax steaming and refreshing data if new data is available
 

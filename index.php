@@ -36,3 +36,5 @@ switch ($page) {
 
     break;
 }
+
+?>

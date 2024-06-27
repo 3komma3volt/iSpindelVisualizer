@@ -26,6 +26,8 @@ try {
 
   $spindle_data = getSpindleMeasurements($pdo, $_SESSION['spindle_data']['spindle_id']);
 
+  $pdo = null;
+
   $data = [
     'spindle_id' => $_SESSION['spindle_data']['spindle_id'],
     'spindle_alias' => $_SESSION['spindle_data']['spindle_alias'],
@@ -44,3 +46,5 @@ try {
   echo 'Error in DB execution: ' . $e->getMessage();
   error_log("Error in DB execution: " . $e->getMessage());
 }
+
+?>

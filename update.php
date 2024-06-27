@@ -12,18 +12,31 @@
 require_once("database.php");
 
 if (!isset($_GET['key']) || empty($_GET['key'])) {
-    echo "Missing or empty secret key for your iSpindel!";
+    echo 'Missing or empty secret key for your iSpindel!';
     exit();
 }
 
-$spindle_key = filter_input(INPUT_GET, 'key', FILTER_SANITIZE_SPECIAL_CHARS);
+$spindle_key_raw = filter_input(INPUT_GET, 'key', FILTER_SANITIZE_SPECIAL_CHARS);
 
 try {
     $post_data = file("php://input");
     $data = json_decode($post_data[0], true);
+    if (json_last_error() !== JSON_ERROR_NONE) {
+        echo 'JSON file format mismatch';
+        error_log('JSON file format mismatch');
+        exit();
+    }
+    $json_fields = ['ID', 'name', 'angle', 'temperature', 'temp_units', 'gravity', 'interval', 'RSSI'];
+    foreach ($json_fields as $field) {
+        if(!isset($data[$field])) {
+            echo 'Missing required data field: ' . $field; 
+            exit();
+        }
+    }
+
 } catch (Exception $e) {
-    echo "Error: " . $e->getMessage();
-    error_log("Error in processing data: " . $e->getMessage());
+    echo 'Error: ' . $e->getMessage();
+    error_log('Error in processing data: ' . $e->getMessage());
 }
 
 try {
@@ -38,19 +51,26 @@ try {
     $result = $checkpdo->fetch(PDO::FETCH_ASSOC);
     // Checking if spindle already exists in database and check its key if existing
     if ($result) {
-        if ($result['spindle_key'] !== $spindle_key) {
-            echo "Wrong iSpindel key provided";
+       if(!password_verify($spindle_key_raw, $result['spindle_key'])) {
+            echo 'Wrong iSpindel key provided';
             exit();
         }
     } else {
         // Insert the new spindle with provided key
+        $spindle_key = password_hash($spindle_key_raw, PASSWORD_DEFAULT);
         $insert = "INSERT INTO spindles (spindle_id, spindle_key, alias) VALUES (:spindle_id, :spindle_key, :alias)";
         $insertpdo = $pdo->prepare($insert);
         $insertpdo->bindParam(':spindle_id', $data['ID'], PDO::PARAM_INT);
         $insertpdo->bindParam(':spindle_key', $spindle_key, PDO::PARAM_STR);
         $insertpdo->bindParam(':alias', $data['name'], PDO::PARAM_STR);
         $insertpdo->execute();
-        echo "New iSpindel added with key: " . $spindle_key;
+        if (isset($_SERVER['HTTPS'])) {
+            echo 'New iSpindel added with key: ' . $spindle_key_raw .'<br>';
+        }
+        else {
+            echo 'New iSpindel added with desired key<br>';
+        }
+        
     }
 
     $insert = "INSERT INTO spindle_data (name, spindle_id, angle, temperature, temp_units, battery, gravity, update_interval, rssi) 
@@ -68,13 +88,15 @@ try {
     $insertpdo->bindParam(':rssi', $data['RSSI'], PDO::PARAM_INT);
     $insertpdo->execute();
 
-    echo "Data inserted successfully.";
+    echo 'Data inserted successfully.';
 } catch (PDOException $e) {
-    echo "Error in DB execution: " . $e->getMessage();
-    error_log("Error in DB execution: " . $e->getMessage());
+    echo 'Error in DB execution: ' . $e->getMessage();
+    error_log('Error in DB execution: ' . $e->getMessage());
 } catch (Exception $e) {
-    echo "Error: " . $e->getMessage();
-    error_log("Error: " . $e->getMessage());
+    echo 'Error: ' . $e->getMessage();
+    error_log('Error: "' . $e->getMessage());
 }
 
 $pdo = null;
+
+?>
