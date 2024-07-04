@@ -5,7 +5,7 @@ The iSpindel Visualizer is a simple, easy to use chart display of [iSpindel](htt
 
 The intention was to create an extremely simple tool which stores the data which is sent by the iSpindel HTTPS POST and displaying it without any registration and special cloud service.
 
-  ![Dashboard](assets/dashboard.png)
+![Dashboard](assets/dashboard.png)
   
 ## Installation
 
@@ -25,7 +25,7 @@ The first time a iSpindel connects, it will automatically registered and the key
 
   ![Post configuration](assets/post_config.png)
 
-  The system use the iSpindle ID for accessing its data. You can find it on the information page of the iSpindel.
+The system use the iSpindle ID for accessing its data. You can find it on the information page of the iSpindel.
 The name which is stored in the iSpindel will be used for its alias name.
 
   ![Spindle ID](assets/spindleid.png)
@@ -42,7 +42,6 @@ There is a minor security encrypting the spindle's key in the database.
 
 ## Todo
 
-- Adding feature of renaming the alias of a iSpindel
 - Ajax steaming and refreshing data if new data is available
 
 The project was mainly done for practicing PHP coding.

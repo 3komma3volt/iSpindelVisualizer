@@ -43,6 +43,34 @@ function checkSpindleKey(PDO $pdo, $spindle_id, $spindle_key)
 
 
 /**
+ * Changes the alias of an iSpindel
+ * @param PDO $pdo object with database
+ * @param int $spindle_id int value of spindle ID
+ * @param string $new_name new alias of the spindle
+ * 
+ * @return 0 if successful
+ */
+function renameSpindle(PDO $pdo, $spindle_id, $new_name) {
+  try {
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    $update_alias_stmt = "UPDATE spindles SET alias = :alias WHERE spindle_id = :spindle_id";
+    $updatepdo = $pdo->prepare($update_alias_stmt);
+    $updatepdo->bindParam(':alias', $new_name, PDO::PARAM_STR);
+    $updatepdo->bindParam(':spindle_id', $spindle_id, PDO::PARAM_INT);
+    $updatepdo->execute();
+    return 0;
+
+  } catch (PDOException $e) {
+    echo 'Error in DB execution: ' . $e->getMessage();
+    error_log("Error in DB execution: " . $e->getMessage());
+    return -1;
+  }
+
+}
+
+
+/**
  * Returns the measurement values as array
  * @param PDO $pdo object with database
  * @param mixed $spindle_id int value of spindle ID
@@ -50,7 +78,7 @@ function checkSpindleKey(PDO $pdo, $spindle_id, $spindle_key)
  * 
  * @return [spindle data as array]
  */
-function getSpindleMeasurements(PDO $pdo, $spindle_id, $time_perod = 14)
+function getSpindleMeasurements(PDO $pdo, $spindle_id, $time_perod = 7)
 {
   try {
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
