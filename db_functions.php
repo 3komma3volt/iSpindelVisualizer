@@ -30,7 +30,7 @@ function checkSpindleKey(PDO $pdo, $spindle_id, $spindle_key)
     $result = $checkpdo->fetch(PDO::FETCH_ASSOC);
 
     if (!empty($result['spindle_key'])) {
-        if (password_verify($spindle_key, $result['spindle_key'])) {
+      if (password_verify($spindle_key, $result['spindle_key'])) {
         return ['login' => true, 'alias' => $result['alias']];
       }
     }
@@ -50,7 +50,8 @@ function checkSpindleKey(PDO $pdo, $spindle_id, $spindle_key)
  * 
  * @return 0 if successful
  */
-function renameSpindle(PDO $pdo, $spindle_id, $new_name) {
+function renameSpindle(PDO $pdo, $spindle_id, $new_name)
+{
   try {
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
@@ -60,13 +61,11 @@ function renameSpindle(PDO $pdo, $spindle_id, $new_name) {
     $updatepdo->bindParam(':spindle_id', $spindle_id, PDO::PARAM_INT);
     $updatepdo->execute();
     return 0;
-
   } catch (PDOException $e) {
     echo 'Error in DB execution: ' . $e->getMessage();
     error_log("Error in DB execution: " . $e->getMessage());
     return -1;
   }
-
 }
 
 
@@ -85,23 +84,23 @@ function getSpindleMeasurements(PDO $pdo, $spindle_id, $time_perod = 7)
     $sql = "SELECT MAX(created_at) AS latest_date FROM spindle_data";
     $stmt = $pdo->prepare($sql);
     $stmt->execute();
-  
+
     $latest_date_result = $stmt->fetch(PDO::FETCH_ASSOC);
-  
+
     if (!$latest_date_result || !isset($latest_date_result['latest_date'])) {
-      return []; 
+      return [];
     }
-  
+
     $latest_date = $latest_date_result['latest_date'];
-  
-    $cutoff_date = date('Y-m-d', strtotime('-'.strval($time_perod).' days', strtotime($latest_date)));
-  
-    $sql = "SELECT angle, temperature, temp_units, battery, gravity, created_at FROM spindle_data WHERE created_at >= :cutoff_date";
-  
+
+    $cutoff_date = date('Y-m-d', strtotime('-' . strval($time_perod) . ' days', strtotime($latest_date)));
+    $sql = "SELECT angle, temperature, temp_units, battery, gravity, created_at FROM spindle_data WHERE spindle_id = :spindle_id AND created_at >= :cutoff_date ORDER BY created_at ASC";
+
     $stmt = $pdo->prepare($sql);
+    $stmt->bindParam(':spindle_id', $spindle_id, PDO::PARAM_INT);
     $stmt->bindParam(':cutoff_date', $cutoff_date, PDO::PARAM_STR);
     $stmt->execute();
-    
+
     $data_array = array();
     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
       $data_array['angle'][] = $row['angle'];
@@ -109,17 +108,9 @@ function getSpindleMeasurements(PDO $pdo, $spindle_id, $time_perod = 7)
       $data_array['temp_units'][] = $row['temp_units'];
       $data_array['battery'][] = $row['battery'];
       $data_array['gravity'][] = $row['gravity'];
-      $data_array['timestamp'][] = $row['created_at'];    
+      $data_array['timestamp'][] = $row['created_at'];
     }
-    if($data_array != null) {
-      if ($data_array['angle'] != null) $data_array['angle'] = array_reverse($data_array['angle']);
-      if ($data_array['temperature'] != null) $data_array['temperature'] = array_reverse($data_array['temperature']);      
-      if ($data_array['temp_units'] != null) $data_array['temp_units'] = array_reverse($data_array['temp_units']);
-      if ($data_array['battery'] != null) $data_array['battery'] = array_reverse($data_array['battery']);
-      if ($data_array['gravity'] != null) $data_array['gravity'] = array_reverse($data_array['gravity']);
-      if ($data_array['timestamp'] != null) $data_array['timestamp'] = array_reverse($data_array['timestamp']);
-    }
-    
+
     return $data_array;
   } catch (PDOException $e) {
     echo 'Error in DB execution: ' . $e->getMessage();

@@ -62,6 +62,9 @@ if (isset($_POST['timespanSelect'])) {
       break;
   }
 }
+else {
+  $sel7 = "selected";
+}
 
 try {
 

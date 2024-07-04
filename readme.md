@@ -42,6 +42,6 @@ There is a minor security encrypting the spindle's key in the database.
 
 ## Todo
 
-- Ajax steaming and refreshing data if new data is available
+~~- Ajax steaming and refreshing data if new data is available~~ Data is mostly sent in intervals >15min, so a stream is not necessary
 
 The project was mainly done for practicing PHP coding.
