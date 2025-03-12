@@ -1,4 +1,4 @@
-<?php include('header.php') ?>
+<?php include('header.template.php') ?>
 <style>
   .div-center {
     width: 400px;
@@ -26,7 +26,7 @@
     </div>
     <div class="form-group">
       <label for="spindle_key">Spindle Key:</label>
-      <input type="text" class="form-control" id="spindle_key" name="spindle_key" placeholder="...">
+      <input type="password" class="form-control" id="spindle_key" name="spindle_key" placeholder="...">
     </div>
     <div class="row d-flex mt-3 ms-2 me-2"> <button type="submit" class="btn btn-primary mt-1">Access</button>
     </div>
@@ -35,4 +35,4 @@
 
 </div>
 
-<?php include('footer.php') ?>
+<?php include('footer.template.php') ?>

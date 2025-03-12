@@ -19,12 +19,12 @@ class Database {
           $dbname = DATABASE_NAME;
           $username = DATABASE_USERNAME;
           $password = DATABASE_PASSWORD;
-
+          
           $this->pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
           $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (PDOException $e) {
-          throw('Error connecting to database');
           error_log('Error connecting to database: ' . $e->getMessage());
+          throw new PDOException('Error connecting to database');
         }
     }
 

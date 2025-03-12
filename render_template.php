@@ -20,7 +20,7 @@
 function renderTemplate($template, $data)
 {
   if (!file_exists($template)) {
-    echo 'Template file .$template. not found';
+    echo 'Template file '.$template.' not found';
     exit();
   }
 

@@ -1,6 +1,6 @@
 <?php
-include('header.php');
-include('navbar.php');
+include('header.template.php');
+include('navbar.template.php');
 ?>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -10,8 +10,10 @@ include('navbar.php');
   <div class="text-center">
     <h1 class="d-inline">iSpindel: <?= $spindle_alias ?></h1>
     <a class="bi bi-pencil-square d-inline" href="#" data-bs-toggle="modal" data-bs-target="#nameChangeDialog"></a>
-    <p>ID: <?=$spindle_id ?></p>
-    <?=$error_message ?>
+    <a class="bi bi-eraser d-inline" href="#" data-bs-toggle="modal" data-bs-target="#clearDataModal"></a>
+    <div class="mt-1"><span class="badge rounded-pill text-bg-primary">ID: <?= $spindle_id ?></span></div>
+    <?= $message ?>
+    <div class="mt-2">
     <form method="POST">
       <label class="mr-sm-2" for="timespanSelect">View</label>
       <select class="mr-sm-2 mb-2" id="timespanSelect" name="timespanSelect" onchange="this.form.submit()">
@@ -21,9 +23,10 @@ include('navbar.php');
         <option value="21" <?= $select21 ?>>21 days</option>
       </select>
     </form>
+    </div>
   </div>
 
-  <div class='chart-container' style='position: relative; height:40vh;'>
+  <div class='chart-container' style='position: relative; height:60vh;'>
     <canvas id='spindledata'></canvas>
   </div>
 
@@ -136,4 +139,38 @@ include('navbar.php');
   </div>
 </div>
 
-<?php include("footer.php") ?>
+
+<div class="modal fade" id="clearDataModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Clear data</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+      <form method="POST">
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" name="chkClearData" id="chkClearData">
+          <label class="form-check-label" for="chkClearData">
+            Confirm deletion of all mesaurement data (iSpindel key will not be deleted)
+          </label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="submit" id="btnClearData" class="btn btn-danger" disabled>Clear</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const check = document.getElementById('chkClearData');
+  const button = document.getElementById('btnClearData');
+  check.addEventListener('change', () => {
+    button.disabled = !check.checked;
+  });
+  </script>
+
+<?php include("footer.template.php") ?>

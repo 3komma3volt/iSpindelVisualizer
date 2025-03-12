@@ -19,8 +19,8 @@ if (!isset($_GET['key']) || empty($_GET['key'])) {
 $spindle_key_raw = filter_input(INPUT_GET, 'key', FILTER_SANITIZE_SPECIAL_CHARS);
 
 try {
-    $post_data = file("php://input");
-    $data = json_decode($post_data[0], true);
+    $post_data = file_get_contents("php://input");
+    $data = json_decode($post_data, true);
     if (json_last_error() !== JSON_ERROR_NONE) {
         echo 'JSON file format mismatch';
         error_log('JSON file format mismatch');

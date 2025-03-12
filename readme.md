@@ -3,15 +3,17 @@
   
 The iSpindel Visualizer is a simple, easy to use chart display of [iSpindel](https://www.ispindel.de) measurement data using PHP, MySQL, Bootstrap and chart.js.
 
-The intention was to create an extremely simple tool which stores the data which is sent by the iSpindel HTTPS POST and displaying it without any registration and special cloud service.
+The intention was to create an extremely simple tool which stores the data which is sent by the iSpindel HTTPS POST and displaying it without any registration with e-mail and special cloud service.
 
 ![Dashboard](assets/dashboard.png)
   
 ## Installation
 
-1. Create a database as in the **sql_structure.sql**
+The iSpindel Visualizer has now a installer for the tables.
 
-2. Configure the database connection in the **configuration.php**
+1. Configure the database connection in **configuration.php**.
+
+2. Open the URL with `/install.php` to create the tables.
 
 ## Usage
 
@@ -21,11 +23,13 @@ As path use **/update.php?key=...**
 
 The key is a kind of a password to protect your data. You can use any alphanumerical sequence and special characters with any length. Example: sz89Bd96$iogf
 
+So with this example the update path would be **/update.php?key=sz89Bd96$iogf**
+
 The first time a iSpindel connects, it will automatically registered and the key will be stored for future key checks and logins.
 
   ![Post configuration](assets/post_config.png)
 
-The system use the iSpindle ID for accessing its data. You can find it on the information page of the iSpindel.
+The system use the iSpindel ID for accessing its data. You can find it on the information page of the iSpindel.
 The name which is stored in the iSpindel will be used for its alias name.
 
   ![Spindle ID](assets/spindleid.png)
@@ -36,12 +40,7 @@ To access your data, simply log-in using your iSpindel ID and your self chosen k
 
 ![Login Screen](assets/login.png)
 
-## Security
+## Additional Features
 
-There is a minor security encrypting the spindle's key in the database.
-
-## Todo
-
-~~- Ajax steaming and refreshing data if new data is available~~ Data is mostly sent in intervals >15min, so a stream is not necessary
-
-The project was mainly done for practicing PHP coding.
+- Renaming the alias of an iSpindel for easier identification without changing the configuration within the iSpindel.
+- Clearing the data to start a new measurement period.

@@ -58,7 +58,7 @@ if (isset($spindle_credentials) && $spindle_credentials['login']) {
 if ((isset($spindle_credentials) && !$spindle_credentials['login']) || empty($post_data['spindle_id']) || empty($post_data['spindle_key'])) {
 
 
-  $template = 'templates/login.php';
+  $template = 'templates/login.template.php';
   $renderedContent = renderTemplate($template, $data);
 
   echo $renderedContent;

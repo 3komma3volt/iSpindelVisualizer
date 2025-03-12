@@ -9,6 +9,57 @@
  * @license MIT License
  */
 
+ /**
+ * Checks if the table exists in the database
+ * @param PDO $pdo object with database
+ * @param mixed $table_name name of the table to check
+ * 
+ * @return true if table exists, false if not
+ */
+function checkDatabaseExisting(PDO $pdo, $table_name = 'spindles')
+{
+  try {
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $check_existing = "SHOW TABLES LIKE '$table_name'";
+    $checkpdo = $pdo->prepare($check_existing);
+    $checkpdo->execute();
+
+    $result = $checkpdo->fetch(PDO::FETCH_ASSOC);
+    if ($result) {
+      return true;
+    }
+    return false;
+  } catch (PDOException $e) {
+    echo 'Error in DB execution: ' . $e->getMessage();
+    error_log("Error in DB execution: " . $e->getMessage());
+    return false;
+  }
+}
+
+
+/**
+ * CClears all data of a specific spindle ID
+ * @param PDO $pdo object with database
+ * @param mixed $spindle_id int value of spindle ID
+ * 
+ * @return 0 if successful, -1 if not
+ */
+function clearSpindleData(PDO $pdo, $spindle_id)
+{
+  try {
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $delete_data_stmt = "DELETE FROM spindle_data WHERE spindle_id = :spindle_id";
+    $deletepdo = $pdo->prepare($delete_data_stmt);
+    $deletepdo->bindParam(':spindle_id', $spindle_id, PDO::PARAM_INT);
+    $deletepdo->execute();
+    return 0;
+  } catch (PDOException $e) {
+    echo 'Error in DB execution: ' . $e->getMessage();
+    error_log("Error in DB execution: " . $e->getMessage());
+    return -1;
+  }
+} 
+
 
 /**
  * Checks if the key of a specific spindle ID is correct
