@@ -1,37 +1,82 @@
 <?php
 include('header.template.php');
-include('navbar.template.php');
 ?>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<div class="container mt-5">
+<script>
+
+  const newLegendClickHandler = function (e, legendItem, legend) {
+    const index = legendItem.datasetIndex;
+    const ci = legend.chart;
+    if (ci.isDatasetVisible(index)) {
+      ci.hide(index);
+      legendItem.hidden = true;
+    } else {
+      ci.show(index);
+      legendItem.hidden = false;
+    }
+    let viewValue = legendItem.hidden === false ? 1 : 0;
+
+    $.ajax({
+      url: 'view_configuration.php',
+      type: 'POST',
+      data: { 'changed_view': legendItem.text, 'changed_value': viewValue },
+      dataType: 'json',
+      success: function (response) {
+        if (!response.success) {
+          console.error('Error:', response.message);
+        }
+      },
+      error: function (xhr, status, error) {
+        console.error('AJAX Error:', status, error);
+      }
+    });
+  }
+</script>
+
+<div class="container mt-1">
 
   <div class="text-center">
-    <h1 class="d-inline">iSpindel: <?= $spindle_alias ?></h1>
-    <a class="bi bi-pencil-square d-inline" href="#" data-bs-toggle="modal" data-bs-target="#nameChangeDialog"></a>
-    <a class="bi bi-eraser d-inline" href="#" data-bs-toggle="modal" data-bs-target="#clearDataModal"></a>
-    <div class="mt-1"><span class="badge rounded-pill text-bg-primary">ID: <?= $spindle_id ?></span></div>
+    <h1 class="d-inline">iSpindel:
+      <?= $spindle_alias ?>
+    </h1>
+
     <?= $message ?>
-    <div class="mt-2">
-    <form method="POST">
-      <label class="mr-sm-2" for="timespanSelect">View</label>
-      <select class="mr-sm-2 mb-2" id="timespanSelect" name="timespanSelect" onchange="this.form.submit()">
-        <option value="3" <?= $select3 ?>>3 days</option>
-        <option value="7" <?= $select7 ?>>7 days</option>
-        <option value="14" <?= $select14 ?>>14 days</option>
-        <option value="21" <?= $select21 ?>>21 days</option>
-      </select>
-    </form>
+    <div class="row justify-content-md-center mt-2 mb-3">
+      <div class="col-auto">
+        <form method="POST">
+          <div class="input-group input-group-sm mt-2">
+            <span class="input-group-text" id="spindleIdName">ID: <?= $spindle_id ?></span>
+            <span class="input-group-text" id="timespanSelectDesc">View</span>
+            <select class="form-select" aria-describedby="timespanSelectDesc" id="timespanSelect" name="timespanSelect"
+              onchange="this.form.submit()">
+              <option value="3" <?=$select3 ?>>3 days</option>
+              <option value="7" <?=$select7 ?>>7 days</option>
+              <option value="14" <?=$select14 ?>>14 days</option>
+              <option value="21" <?=$select21 ?>>21 days</option>
+            </select>
+            <a class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#nameChangeDialog"><i
+                class="bi btn-sm bi-pencil-square me-2"></i>Rename</a>
+            <a class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#clearDataModal"><i
+                class="bi bi-eraser me-2"></i>Clear Data</a>
+            <a href="logout.php" class="btn btn-sm btn-outline-secondary"><i class="bi bi-door-open me-2"></i>Logout</a>
+          </div>
+        </form>
+
+      </div>
+    </div>
+    <div class='chart-container' style='position: relative; height:80vh;'>
+      <canvas id='spindledata'></canvas>
     </div>
   </div>
-
-  <div class='chart-container' style='position: relative; height:60vh;'>
-    <canvas id='spindledata'></canvas>
-  </div>
-
   <script>
     const ctxChart = document.getElementById('spindledata');
+
+    let gravity_hidden = <?= $gravity_visible ?> == 1 ? false : true;
+    let temperature_hidden = <?= $temperature_visible ?> == 1 ? false : true;
+    let battery_hidden = <?= $battery_visible ?> == 1 ? false : true;
+    let angle_hidden = <?= $angle_visible ?> == 1 ? false : true;
 
     new Chart(ctxChart, {
       type: 'line',
@@ -40,31 +85,33 @@ include('navbar.template.php');
           <?= $timestamps ?>,
         ],
         datasets: [{
-            label: 'Gravity',
-            data: [<?= $gravity_list ?>],
-            borderWidth: 2,
-            yAxisID: 'y3',
-          },
-          {
-            label: 'Temperature',
-            data: [<?= $temperature_list ?>],
-            borderWidth: 1,
-            yAxisID: 'y1',
-          },
-          {
-            label: 'Battery',
-            data: [<?= $battery_list ?>],
-            borderWidth: 1,
-            yAxisID: 'y2',
-            hidden: true,
-          },
-          {
-            label: 'Angle',
-            data: [<?= $angle_list ?>],
-            borderWidth: 1,
-            yAxisID: 'y',
-            hidden: true,
-          },
+          label: 'Gravity',
+          data: [<?= $gravity_list ?>],
+          borderWidth: 2,
+          yAxisID: 'y3',
+          hidden: gravity_hidden
+        },
+        {
+          label: 'Temperature',
+          data: [<?= $temperature_list ?>],
+          borderWidth: 1,
+          yAxisID: 'y1',
+          hidden: temperature_hidden
+        },
+        {
+          label: 'Battery',
+          data: [<?= $battery_list ?>],
+          borderWidth: 1,
+          yAxisID: 'y2',
+          hidden: battery_hidden,
+        },
+        {
+          label: 'Angle',
+          data: [<?= $angle_list ?>],
+          borderWidth: 1,
+          yAxisID: 'y',
+          hidden: angle_hidden,
+        },
         ]
       },
       options: {
@@ -72,7 +119,8 @@ include('navbar.template.php');
         plugins: {
           legend: {
             display: true,
-            position: 'top'
+            position: 'top',
+            onClick: newLegendClickHandler
           }
         },
         scales: {
@@ -83,6 +131,8 @@ include('navbar.template.php');
             },
             beginAtZero: false,
             position: 'right',
+            min: 0,
+            max: 90
 
           },
           y1: {
@@ -90,7 +140,9 @@ include('navbar.template.php');
               display: true,
               text: 'Temperature/°'
             },
-            beginAtZero: false
+            beginAtZero: false,
+            min: 0,
+            max: 30
 
           },
           y2: {
@@ -100,6 +152,8 @@ include('navbar.template.php');
             },
             beginAtZero: false,
             position: 'right',
+            min: 2.5,
+            max: 5.0
 
           },
           y3: {
@@ -127,7 +181,8 @@ include('navbar.template.php');
         <div class="modal-body">
           <div class="form-group">
             <label for="formSpindleName">New Name:</label>
-            <input type="text" class="form-control" name="formSpindleName" id="formSpindleName" value="<?= $spindle_alias ?>">
+            <input type="text" class="form-control" name="formSpindleName" id="formSpindleName"
+              value="<?= $spindle_alias ?>">
           </div>
         </div>
         <div class="modal-footer">
@@ -148,13 +203,13 @@ include('navbar.template.php');
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-      <form method="POST">
-        <div class="form-check">
-          <input class="form-check-input" type="checkbox" name="chkClearData" id="chkClearData">
-          <label class="form-check-label" for="chkClearData">
-            Confirm deletion of all mesaurement data (iSpindel key will not be deleted)
-          </label>
-        </div>
+        <form method="POST">
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="chkClearData" id="chkClearData">
+            <label class="form-check-label" for="chkClearData">
+              Confirm deletion of all mesaurement data (iSpindel key will not be deleted)
+            </label>
+          </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -171,6 +226,7 @@ include('navbar.template.php');
   check.addEventListener('change', () => {
     button.disabled = !check.checked;
   });
-  </script>
+
+</script>
 
 <?php include("footer.template.php") ?>

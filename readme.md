@@ -3,7 +3,7 @@
   
 The iSpindel Visualizer is a simple, easy to use chart display of [iSpindel](https://www.ispindel.de) measurement data using PHP, MySQL, Bootstrap and chart.js.
 
-The intention was to create an extremely simple tool which stores the data which is sent by the iSpindel HTTPS POST and displaying it without any registration with e-mail and special cloud service.
+The intention was to create an extremely simple tool which stores the data which is sent by the iSpindel HTTPS POST and displaying it without any registration with e-mail or cloud services.
 
 ![Dashboard](assets/dashboard.png)
   
@@ -44,3 +44,4 @@ To access your data, simply log-in using your iSpindel ID and your self chosen k
 
 - Renaming the alias of an iSpindel for easier identification without changing the configuration within the iSpindel.
 - Clearing the data to start a new measurement period.
+- Storing of the last view configuration

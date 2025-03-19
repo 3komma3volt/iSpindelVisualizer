@@ -48,9 +48,16 @@ if (isset($_POST['formSpindleName'])) {
     $message = '<p>Error changing name.</p>';
   }
 }
+$viewConfiguration = getViewConfiguration($pdo, $_SESSION['spindle_data']['spindle_id']);
 
 if (isset($_POST['timespanSelect'])) {
   $selected_timespan = intval(filter_input(INPUT_POST, 'timespanSelect', FILTER_SANITIZE_SPECIAL_CHARS));
+  setViewDays($pdo, $_SESSION['spindle_data']['spindle_id'], $selected_timespan);
+  
+}
+else {
+  $selected_timespan = $viewConfiguration['view_days'] != 0 ? $viewConfiguration['view_days'] : 7;
+} 
   switch ($selected_timespan) {
     case 3:
       $sel3 = "selected";
@@ -70,12 +77,9 @@ if (isset($_POST['timespanSelect'])) {
       $timespan = 7;
       break;
   }
-} else {
-  $sel7 = "selected";
-}
+
 
 try {
-
   $spindle_data = getSpindleMeasurements($pdo, $_SESSION['spindle_data']['spindle_id'], $timespan ?? 7);
   $pdo = null;
 
@@ -86,7 +90,11 @@ try {
     'select7' => $sel7 ?? '',
     'select14' => $sel14 ?? '',
     'select21' => $sel21  ?? '',
-    'message' => $message ?? ''
+    'message' => $message ?? '',
+    'gravity_visible' => $viewConfiguration['view_config']['gravity'] ?? 1,
+    'temperature_visible' => $viewConfiguration['view_config']['temperature'] ?? 1,
+    'battery_visible' => $viewConfiguration['view_config']['battery'] ?? 1,
+    'angle_visible' => $viewConfiguration['view_config']['angle'] ?? 1,
   ];
 
   if (empty($spindle_data)) {
@@ -108,7 +116,6 @@ try {
     $data = array_merge($data, $spindle_page_data);
   }
 
- 
 
   $template = 'templates/dashboard.template.php';
   $rendered_content = renderTemplate($template, $data);

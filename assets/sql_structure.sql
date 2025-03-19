@@ -2,6 +2,8 @@ CREATE TABLE spindles (
     id INT AUTO_INCREMENT PRIMARY KEY,
     spindle_id INT NOT NULL UNIQUE,
     spindle_key VARCHAR(255) NOT NULL,
+    view_config varchar(255) NOT NULL,
+    view_days int(11) NOT NULL,
     alias VARCHAR(255) NOT NULL
 );
 

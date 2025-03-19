@@ -9,6 +9,14 @@
  * @license MIT License
  */
 
+
+ define('DEFAULT_VIEW_CONFIG', json_encode([
+  'gravity' => 1,
+  'temperature' => 1,
+  'battery' => 0,
+  'angle' => 0
+]));
+
  /**
  * Checks if the table exists in the database
  * @param PDO $pdo object with database
@@ -163,6 +171,99 @@ function getSpindleMeasurements(PDO $pdo, $spindle_id, $time_perod = 7)
     }
 
     return $data_array;
+  } catch (PDOException $e) {
+    echo 'Error in DB execution: ' . $e->getMessage();
+    error_log("Error in DB execution: " . $e->getMessage());
+  }
+}
+
+/**
+ * Sets the number of view days for a specific spindle.
+ *
+ * @param PDO $pdo The PDO instance for database connection.
+ * @param int $spindle_id The ID of the spindle.
+ * @param int $view_days The number of days to set for viewing.
+ *
+ * @return void
+ */
+function setViewDays(PDO $pdo, $spindle_id, $view_days) {
+  try {
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $sql = "UPDATE spindles SET view_days = :view_days WHERE spindle_id = :spindle_id";
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindParam(':view_days', $view_days, PDO::PARAM_INT);
+    $stmt->bindParam(':spindle_id', $spindle_id, PDO::PARAM_INT);
+    $stmt->execute();
+    return 0;
+  } catch (PDOException $e) {
+    echo 'Error in DB execution: ' . $e->getMessage();
+    error_log("Error in DB execution: " . $e->getMessage());
+    return -1;
+  }	
+}
+
+
+/**
+ * Sets the view configuration for a specific spindle.
+ *
+ * @param PDO $pdo The PDO instance for database connection.
+ * @param int $spindle_id The ID of the spindle.
+ * @param int $view_config The view configuration to set.
+ *
+ * @return void
+ */
+function setViewConfiguration(PDO $pdo, $spindle_id, $key, $value) {
+  try {
+    $view_config = getViewConfiguration($pdo, $spindle_id);
+    $config_value_json = $view_config['view_config'];
+   
+    $config_value_json[strtolower($key)] = intval($value);
+
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $sql = "UPDATE spindles SET view_config = :view_config WHERE spindle_id = :spindle_id";
+    $stmt = $pdo->prepare($sql);
+    $config_value_json_encoded = json_encode($config_value_json);
+    $stmt->bindParam(':view_config', $config_value_json_encoded, PDO::PARAM_STR);
+    $stmt->bindParam(':spindle_id', $spindle_id, PDO::PARAM_INT);
+    $stmt->execute();
+    return 0;
+  } catch (PDOException $e) {
+    echo 'Error in DB execution: ' . $e->getMessage();
+    error_log("Error in DB execution: " . $e->getMessage());
+    return -1;
+  }	
+}
+
+/**
+ * Retrieves the view configuration for a specific spindle.
+ *
+ * @param PDO $pdo The PDO instance for database connection.
+ * @param int $spindle_id The ID of the spindle to retrieve the configuration for.
+ * @return array The view configuration for the specified spindle.
+ */
+function getViewConfiguration(PDO $pdo, $spindle_id)
+{
+  try {
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $sql = "SELECT view_config, view_days FROM spindles WHERE spindle_id = :spindle_id";
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindParam(':spindle_id', $spindle_id, PDO::PARAM_INT);
+    $stmt->execute();
+
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($result) {
+      $decoded_config = json_decode($result['view_config'], true);
+      if (json_last_error() === JSON_ERROR_NONE && is_array($decoded_config)) {
+        $view_config = $decoded_config;
+      } else {
+        $view_config = json_decode(DEFAULT_VIEW_CONFIG, true);
+      }
+      $view_days = $result['view_days'];
+
+      return ['view_config' => $view_config, 'view_days' => $view_days];
+    }
+    return [];
   } catch (PDOException $e) {
     echo 'Error in DB execution: ' . $e->getMessage();
     error_log("Error in DB execution: " . $e->getMessage());

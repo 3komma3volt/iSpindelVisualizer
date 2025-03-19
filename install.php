@@ -25,7 +25,10 @@ if(!checkDatabaseExisting($pdo, 'spindles')) {
     id INT AUTO_INCREMENT PRIMARY KEY,
     spindle_id INT NOT NULL UNIQUE,
     spindle_key VARCHAR(255) NOT NULL,
-    alias VARCHAR(255) NOT NULL
+    alias VARCHAR(255) NOT NULL,
+    view_config VARCHAR(255) NOT NULL,
+    view_days INT NOT NULL
+  
   )";
 
   try {
