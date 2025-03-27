@@ -47,7 +47,9 @@ include('header.template.php');
       <div class="col-auto">
         <form method="POST">
           <div class="input-group input-group-sm mt-2">
-            <span class="input-group-text" id="spindleIdName">ID: <?= $spindle_id ?></span>
+            <span class="input-group-text" id="spindleIdName">ID:
+              <?= $spindle_id ?>
+            </span>
             <span class="input-group-text" id="timespanSelectDesc">View</span>
             <select class="form-select" aria-describedby="timespanSelectDesc" id="timespanSelect" name="timespanSelect"
               onchange="this.form.submit()">
@@ -56,11 +58,19 @@ include('header.template.php');
               <option value="14" <?=$select14 ?>>14 days</option>
               <option value="21" <?=$select21 ?>>21 days</option>
             </select>
-            <a class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#nameChangeDialog"><i
-                class="bi btn-sm bi-pencil-square me-2"></i>Rename</a>
-            <a class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#clearDataModal"><i
-                class="bi bi-eraser me-2"></i>Clear Data</a>
-            <a href="logout.php" class="btn btn-sm btn-outline-secondary"><i class="bi bi-door-open me-2"></i>Logout</a>
+
+            <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown"
+              aria-expanded="false"><i class="bi bi-list"></i></button>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#nameChangeDialog"><i
+                    class="bi btn-sm bi-pencil-square me-2"></i>Rename</a></li>
+              <li> <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#clearDataModal"><i
+                    class="bi bi-eraser me-2"></i>Clear Data</a></li>
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+              <li><a href="logout.php" class="dropdown-item"><i class="bi bi-door-open me-2"></i>Logout</a></li>
+            </ul>
           </div>
         </form>
 

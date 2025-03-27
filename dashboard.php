@@ -101,9 +101,31 @@ try {
     $data['message'] = '<p>No data available.</p>';
   }
   else {
+    $data_count = count($spindle_data['id']);
+    if(REDUCED_DATA_POINTS > 0 && $data_count > REDUCED_DATA_POINTS) {
+        $step_size = intval($data_count / REDUCED_DATA_POINTS);
+        $reduced_spindle_data = array_map(function($arr) use ($step_size) {
+          return array_filter($arr, function($key) use ($step_size) {
+            return $key % $step_size == 0;
+          }, ARRAY_FILTER_USE_KEY);
+        }, $spindle_data);
+
+        // Make sure that the last measurement is included
+        if(end($reduced_spindle_data['id']) != end($spindle_data['id'])) {
+          $reduced_spindle_data['id'][] = end($spindle_data['id']);
+          $reduced_spindle_data['angle'][] = end($spindle_data['angle']);
+          $reduced_spindle_data['temperature'][] = end($spindle_data['temperature']);
+          $reduced_spindle_data['battery'][] = end($spindle_data['battery']);
+          $reduced_spindle_data['gravity'][] = end($spindle_data['gravity']);
+          $reduced_spindle_data['timestamp'][] = end($spindle_data['timestamp']);
+        }
+   
+       $spindle_data = $reduced_spindle_data;
+    }
+
     $readable_timestamps = [];
     foreach ($spindle_data['timestamp'] as $timestamp) {
-      $readable_timestamps[] = date('m.d H:i', strtotime($timestamp));
+      $readable_timestamps[] = date('d.m H:i', strtotime($timestamp));
     }
 
     $spindle_page_data= [

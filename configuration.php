@@ -10,9 +10,10 @@
  */
 
 
-define('DATABASE_HOST', 'localhost');
+define('DATABASE_HOST', 'localhost'); 
 define('DATABASE_NAME', 'ispindel_visualizer');
 define('DATABASE_USERNAME', ''); 
 define('DATABASE_PASSWORD', '');
 
+define('REDUCED_DATA_POINTS', 100);  // No of visible measurements in chart, 0 for all
 ?>

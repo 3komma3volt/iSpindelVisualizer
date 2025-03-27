@@ -153,7 +153,7 @@ function getSpindleMeasurements(PDO $pdo, $spindle_id, $time_perod = 7)
     $latest_date = $latest_date_result['latest_date'];
 
     $cutoff_date = date('Y-m-d', strtotime('-' . strval($time_perod) . ' days', strtotime($latest_date)));
-    $sql = "SELECT angle, temperature, temp_units, battery, gravity, created_at FROM spindle_data WHERE spindle_id = :spindle_id AND created_at >= :cutoff_date ORDER BY created_at ASC";
+    $sql = "SELECT id, angle, temperature, temp_units, battery, gravity, created_at FROM spindle_data WHERE spindle_id = :spindle_id AND created_at >= :cutoff_date ORDER BY created_at ASC";
 
     $stmt = $pdo->prepare($sql);
     $stmt->bindParam(':spindle_id', $spindle_id, PDO::PARAM_INT);
@@ -162,6 +162,7 @@ function getSpindleMeasurements(PDO $pdo, $spindle_id, $time_perod = 7)
 
     $data_array = array();
     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+      $data_array['id'][] = $row['id'];
       $data_array['angle'][] = $row['angle'];
       $data_array['temperature'][] = $row['temperature'];
       $data_array['temp_units'][] = $row['temp_units'];

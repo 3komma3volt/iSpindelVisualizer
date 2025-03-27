@@ -1,4 +1,3 @@
-
 # iSpindel Visualizer
   
 The iSpindel Visualizer is a simple, easy to use chart display of [iSpindel](https://www.ispindel.de) measurement data using PHP, MySQL, Bootstrap and chart.js.
@@ -11,9 +10,11 @@ The intention was to create an extremely simple tool which stores the data which
 
 The iSpindel Visualizer has now a installer for the tables.
 
-1. Configure the database connection in **configuration.php**.
+1. Configure the database connection in **configuration.php**. 
 
-2. Open the URL with `/install.php` to create the tables.
+2. Optionally, set the value of `REDUCED_DATA_POINTS` in **configuration.php**. This determines the number of data points displayed in the chart to make it more readable. It applies generally to all spindles. Set to 0 to display all data.
+
+3. Open the URL with `/install.php` to create the tables.
 
 ## Usage
 
