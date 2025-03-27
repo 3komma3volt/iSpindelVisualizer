@@ -44,7 +44,7 @@ include('header.template.php');
 
     <?= $message ?>
     <div class="row justify-content-md-center mt-2 mb-3">
-      <div class="col-auto">
+      <div class="col-auto mx-auto">
         <form method="POST">
           <div class="input-group input-group-sm mt-2">
             <span class="input-group-text" id="spindleIdName">ID:
